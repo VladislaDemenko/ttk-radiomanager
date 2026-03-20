@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Регистрация | Система управления потоковым вещанием</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<main class="auth-layout">
+    <section class="auth-side">
+        <div class="auth-side__content">
+            <div class="auth-badge">
+                <span class="auth-badge__dot"></span>
+                ТТК · Платформа вещания
+            </div>
+
+            <h2 class="auth-side__title">
+                Создание новой учётной записи
+            </h2>
+
+            <p class="auth-side__text">
+                Зарегистрируйте пользователя по требованиям задания. После успешной регистрации
+                система автоматически назначит роль «Пользователь».
+            </p>
+
+            <div class="auth-side__cards">
+                <article class="side-card">
+                    <div class="side-card__glow"></div>
+                    <div class="side-card__top">
+                        <div class="side-card__number">A</div>
+                        <div class="side-card__icon">✦</div>
+                    </div>
+                    <div class="side-card__content">
+                        <strong>Логин</strong>
+                        <span>Допускаются только латинские буквы без цифр, пробелов и кириллицы.</span>
+                    </div>
+                    <div class="side-card__line"></div>
+                </article>
+
+                <article class="side-card">
+                    <div class="side-card__glow"></div>
+                    <div class="side-card__top">
+                        <div class="side-card__number">Б</div>
+                        <div class="side-card__icon">✧</div>
+                    </div>
+                    <div class="side-card__content">
+                        <strong>ФИО</strong>
+                        <span>Разрешены только русские буквы, пробелы и дефис в составе полного имени.</span>
+                    </div>
+                    <div class="side-card__line"></div>
+                </article>
+
+                <article class="side-card">
+                    <div class="side-card__glow"></div>
+                    <div class="side-card__top">
+                        <div class="side-card__number">#</div>
+                        <div class="side-card__icon">⬢</div>
+                    </div>
+                    <div class="side-card__content">
+                        <strong>Пароль</strong>
+                        <span>Допустимы латинские буквы, цифры и спецсимволы с обязательным повторным вводом.</span>
+                    </div>
+                    <div class="side-card__line"></div>
+                </article>
+            </div>
+
+            <div class="auth-side__footer">
+                Роль по умолчанию после регистрации: Пользователь
+            </div>
+        </div>
+    </section>
+
+    <section class="auth-main">
+        <div class="auth-card">
+            <form id="registerForm" novalidate>
+                <div class="form-top">
+                    <span class="form-kicker">Регистрация</span>
+                    <h1>Новый пользователь</h1>
+                    <p class="subtitle">Заполните поля в соответствии с требованиями задания</p>
+                </div>
+
+                <div class="input-box">
+                    <label for="regLogin">Логин</label>
+                    <input
+                            type="text"
+                            id="regLogin"
+                            name="regLogin"
+                            placeholder="Только латинские буквы"
+                            required
+                    />
+                    <small class="hint">Например: ivan, user, admin</small>
+                </div>
+
+                <div class="input-box">
+                    <label for="fio">ФИО</label>
+                    <input
+                            type="text"
+                            id="fio"
+                            name="fio"
+                            placeholder="Только русские буквы"
+                            required
+                    />
+                    <small class="hint">Например: Иванов Иван Иванович</small>
+                </div>
+
+                <div class="input-box">
+                    <label for="regPassword">Пароль</label>
+                    <input
+                            type="password"
+                            id="regPassword"
+                            name="regPassword"
+                            placeholder="Латиница, цифры, символы"
+                            required
+                    />
+                    <small class="hint">Кириллица в пароле запрещена</small>
+                </div>
+
+                <div class="input-box">
+                    <label for="confirmPassword">Повторите пароль</label>
+                    <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            placeholder="Введите пароль ещё раз"
+                            required
+                    />
+                </div>
+
+                <p id="registerMessage" class="message"></p>
+
+                <button type="submit" class="btn">Зарегистрировать</button>
+
+                <div class="register-link">
+                    <p>Уже есть аккаунт? <a href="login.html">Перейти ко входу</a></p>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<script src="js/script.js"></script>
+</body>
+</html>
