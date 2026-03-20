@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Авторизация | Система управления потоковым вещанием</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<main class="auth-layout">
+    <section class="auth-side">
+        <div class="auth-side__content">
+            <div class="auth-badge">
+                <span class="auth-badge__dot"></span>
+                ТТК · Платформа вещания
+            </div>
+
+            <h2 class="auth-side__title">
+                Единая система управления потоковым вещанием
+            </h2>
+
+            <p class="auth-side__text">
+                Авторизация предоставляет доступ к функциям системы в зависимости от роли пользователя:
+                пользователь, ведущий или администратор.
+            </p>
+
+            <div class="auth-side__cards">
+                <article class="side-card">
+                    <div class="side-card__glow"></div>
+                    <div class="side-card__top">
+                        <div class="side-card__number">01</div>
+                        <div class="side-card__icon">●</div>
+                    </div>
+                    <div class="side-card__content">
+                        <strong>Безопасный вход</strong>
+                        <span>Авторизация по логину и паролю с хранением пользователей в локальной базе данных.</span>
+                    </div>
+                    <div class="side-card__line"></div>
+                </article>
+
+                <article class="side-card">
+                    <div class="side-card__glow"></div>
+                    <div class="side-card__top">
+                        <div class="side-card__number">02</div>
+                        <div class="side-card__icon">◆</div>
+                    </div>
+                    <div class="side-card__content">
+                        <strong>Ролевой доступ</strong>
+                        <span>Интерфейс подстраивается под права текущего пользователя и показывает только нужные модули.</span>
+                    </div>
+                    <div class="side-card__line"></div>
+                </article>
+
+                <article class="side-card">
+                    <div class="side-card__glow"></div>
+                    <div class="side-card__top">
+                        <div class="side-card__number">03</div>
+                        <div class="side-card__icon">▲</div>
+                    </div>
+                    <div class="side-card__content">
+                        <strong>Готовность к масштабированию</strong>
+                        <span>Основа интерфейса подготовлена для плеера, административной панели и рабочего пространства ведущего.</span>
+                    </div>
+                    <div class="side-card__line"></div>
+                </article>
+            </div>
+
+            <div class="auth-side__footer">
+                Конкурсный интерфейс · современный корпоративный стиль
+            </div>
+        </div>
+    </section>
+
+    <section class="auth-main">
+        <div class="auth-card">
+            <form id="loginForm" novalidate>
+                <div class="form-top">
+                    <span class="form-kicker">Вход в систему</span>
+                    <h1>Авторизация</h1>
+                    <p class="subtitle">Введите логин и пароль</p>
+                </div>
+
+                <div class="input-box">
+                    <label for="login">Логин</label>
+                    <input
+                            type="text"
+                            id="login"
+                            name="login"
+                            placeholder="Введите логин"
+                            required
+                    />
+                </div>
+
+                <div class="input-box">
+                    <label for="password">Пароль</label>
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Введите пароль"
+                            required
+                    />
+                </div>
+
+                <p id="loginMessage" class="message"></p>
+
+                <button type="submit" class="btn">Вход</button>
+
+                <div class="register-link">
+                    <p>Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<script src="js/script.js"></script>
+</body>
+</html>
