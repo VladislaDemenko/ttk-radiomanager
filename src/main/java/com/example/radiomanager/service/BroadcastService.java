@@ -1,0 +1,62 @@
+package com.example.radiomanager.service;
+
+import com.example.radiomanager.dto.BroadcastInfoDto;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@Service
+@Slf4j
+public class BroadcastService {
+
+    private boolean isLive = false;
+    private String currentTrack = "Ожидание начала эфира";
+    private String currentArtist = "";
+    private LocalDateTime startedAt = null;
+    private final AtomicInteger listenersCount = new AtomicInteger(0);
+
+    public BroadcastInfoDto getBroadcastInfo() {
+        return new BroadcastInfoDto(
+                isLive,
+                currentTrack,
+                currentArtist,
+                listenersCount.get(),
+                startedAt
+        );
+    }
+
+    public void startBroadcast() {
+        if (!isLive) {
+            isLive = true;
+            startedAt = LocalDateTime.now();
+            log.info("Broadcast started at: {}", startedAt);
+        }
+    }
+
+    public void stopBroadcast() {
+        if (isLive) {
+            isLive = false;
+            currentTrack = "Эфир завершен";
+            currentArtist = "";
+            log.info("Broadcast stopped");
+        }
+    }
+
+    public void updateCurrentTrack(String track, String artist) {
+        this.currentTrack = track;
+        this.currentArtist = artist;
+        log.info("Current track updated: {} - {}", artist, track);
+    }
+
+    public void addListener() {
+        listenersCount.incrementAndGet();
+        log.info("Listener added. Total: {}", listenersCount.get());
+    }
+
+    public void removeListener() {
+        listenersCount.decrementAndGet();
+        log.info("Listener removed. Total: {}", listenersCount.get());
+    }
+}
