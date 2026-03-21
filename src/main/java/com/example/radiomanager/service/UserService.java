@@ -1,3 +1,4 @@
+// src/main/java/com/example/radiomanager/service/UserService.java (дополнение)
 package com.example.radiomanager.service;
 
 import com.example.radiomanager.dto.UserRegistrationDto;
@@ -5,6 +6,8 @@ import com.example.radiomanager.model.User;
 import com.example.radiomanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public String registerUser(UserRegistrationDto registrationDto) {
         if (userRepository.existsByLogin(registrationDto.getLogin())) {
@@ -25,10 +29,13 @@ public class UserService {
             return "Пароли не совпадают";
         }
 
+        // Хеширование пароля
+        String hashedPassword = passwordEncoder.encode(registrationDto.getPassword());
+
         User user = new User(
                 registrationDto.getLogin(),
                 registrationDto.getFullName(),
-                registrationDto.getPassword(), // В реальном приложении нужно хэшировать пароль!
+                hashedPassword,
                 LocalDateTime.now()
         );
 
@@ -40,11 +47,16 @@ public class UserService {
         User user = userRepository.findByLogin(login)
                 .orElseThrow(() -> new RuntimeException("Неверный логин или пароль"));
 
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Неверный логин или пароль");
         }
 
         return user;
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     }
 
     public boolean checkLoginExists(String login) {
