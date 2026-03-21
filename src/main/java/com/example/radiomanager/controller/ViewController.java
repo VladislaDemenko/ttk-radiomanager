@@ -30,4 +30,9 @@ public class ViewController {
     public String admin() {
         return "forward:/admin.html";
     }
+
+    @GetMapping("/broadcaster")
+    public String broadcaster() {
+        return "forward:/broadcaster.html";
+    }
 }
