@@ -1,5 +1,3 @@
-// public/js/player.js
-
 let currentUser = null;
 let stompClient = null;
 let audioContext = null;

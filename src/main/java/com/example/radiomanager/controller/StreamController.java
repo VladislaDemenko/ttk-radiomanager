@@ -25,10 +25,8 @@ public class StreamController {
         log.info("Stream listener action: {}, sessionId: {}", action, sessionId);
 
         if ("add".equals(action)) {
-            // Вызываем метод без параметров
             audioStreamingService.addListener();
         } else if ("remove".equals(action)) {
-            // Вызываем метод без параметров
             audioStreamingService.removeListener();
         }
     }

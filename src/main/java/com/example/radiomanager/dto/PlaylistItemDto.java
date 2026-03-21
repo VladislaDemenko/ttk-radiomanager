@@ -1,0 +1,16 @@
+package com.example.radiomanager.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PlaylistItemDto {
+    private Long id;
+    private Long audioFileId;
+    private String fileName;
+    private String originalName;
+    private int position;
+}
