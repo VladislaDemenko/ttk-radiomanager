@@ -32,7 +32,6 @@ body {
     min-height: 100vh;
 }
 
-/* Навигационная панель */
 .navbar {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -127,7 +126,6 @@ body {
     color: var(--white);
 }
 
-/* Основной контент */
 .main-content {
     max-width: 1200px;
     margin: 40px auto;
