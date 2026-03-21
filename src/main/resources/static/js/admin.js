@@ -1,4 +1,3 @@
-// public/js/admin.js
 let currentUser = null;
 let currentEditUserId = null;
 let currentRolesUserId = null;
@@ -12,7 +11,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     currentUser = JSON.parse(userJson);
 
-    // Проверяем наличие роли ADMIN (массив roles)
     if (!currentUser.roles || !currentUser.roles.includes("ADMIN")) {
         window.location.href = "/player";
         return;
@@ -27,9 +25,9 @@ async function loadNavigation() {
     const userInfo = document.getElementById("userInfo");
 
     const modules = [
-        { name: "Плеер", icon: "", path: "/player", active: false },
-        { name: "Раздел ведущего", icon: "", path: "/broadcaster", active: false },
-        { name: "Администрирование", icon: "", path: "/admin", active: true }
+        { name: "Плеер", icon: "🎵", path: "/player", active: false },
+        { name: "Раздел ведущего", icon: "🎙", path: "/broadcaster", active: false },
+        { name: "Администрирование", icon: "⚙️", path: "/admin", active: true }
     ];
 
     navLinks.innerHTML = modules.map(module => `

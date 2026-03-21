@@ -17,13 +17,11 @@ public class BroadcastService {
     private LocalDateTime startedAt = null;
     private final AtomicInteger listenersCount = new AtomicInteger(0);
 
-    // Ссылка на AudioStreamingService, устанавливается через setter
     private AudioStreamingService audioStreamingService;
 
     public BroadcastInfoDto getBroadcastInfo() {
         int listenerCount = listenersCount.get();
 
-        // Если есть audioStreamingService, используем его количество слушателей
         if (audioStreamingService != null) {
             listenerCount = audioStreamingService.getActiveListenersCount();
         }
@@ -64,7 +62,6 @@ public class BroadcastService {
         listenersCount.incrementAndGet();
         log.info("Listener added. Total: {}", listenersCount.get());
 
-        // Синхронизируем с audioStreamingService
         if (audioStreamingService != null) {
             audioStreamingService.addListener();
         }
@@ -74,15 +71,18 @@ public class BroadcastService {
         listenersCount.decrementAndGet();
         log.info("Listener removed. Total: {}", listenersCount.get());
 
-        // Синхронизируем с audioStreamingService
         if (audioStreamingService != null) {
             audioStreamingService.removeListener();
         }
     }
 
-    // Setter для внедрения AudioStreamingService (избегаем циклической зависимости)
     public void setAudioStreamingService(AudioStreamingService audioStreamingService) {
         this.audioStreamingService = audioStreamingService;
+        log.info("AudioStreamingService injected into BroadcastService");
+    }
+
+    public AudioStreamingService getAudioStreamingService() {
+        return audioStreamingService;
     }
 
     public boolean isLive() {
