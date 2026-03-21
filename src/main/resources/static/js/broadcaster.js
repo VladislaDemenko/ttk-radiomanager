@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     currentUser = JSON.parse(userJson);
+    console.log('Broadcaster user:', currentUser);
 
     if (!currentUser.roles || (!currentUser.roles.includes("BROADCASTER") && !currentUser.roles.includes("ADMIN"))) {
         window.location.href = "/player";
@@ -82,8 +83,8 @@ function updateBroadcastUI(info) {
             <span class="status-indicator online"></span>
             <span>Эфир активен</span>
         `;
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
+        if (startBtn) startBtn.disabled = true;
+        if (stopBtn) stopBtn.disabled = false;
         
         if (!broadcastStartTime && info.startedAt) {
             broadcastStartTime = new Date(info.startedAt);
@@ -94,20 +95,21 @@ function updateBroadcastUI(info) {
             <span class="status-indicator offline"></span>
             <span>Эфир остановлен</span>
         `;
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
+        if (startBtn) startBtn.disabled = false;
+        if (stopBtn) stopBtn.disabled = true;
         
         if (timeInterval) {
             clearInterval(timeInterval);
             timeInterval = null;
         }
         broadcastStartTime = null;
-        document.getElementById('broadcastTime').textContent = '00:00:00';
+        const broadcastTimeElem = document.getElementById('broadcastTime');
+        if (broadcastTimeElem) broadcastTimeElem.textContent = '00:00:00';
     }
 
-    trackTitle.textContent = info.currentTrack || '—';
-    trackArtist.textContent = info.currentArtist || '—';
-    listenerCount.textContent = info.listenersCount || 0;
+    if (trackTitle) trackTitle.textContent = info.currentTrack || '—';
+    if (trackArtist) trackArtist.textContent = info.currentArtist || '—';
+    if (listenerCount) listenerCount.textContent = info.listenersCount || 0;
 }
 
 function startTimeCounter() {
@@ -120,8 +122,11 @@ function startTimeCounter() {
             const hours = Math.floor(diff / 3600000);
             const minutes = Math.floor((diff % 3600000) / 60000);
             const seconds = Math.floor((diff % 60000) / 1000);
-            document.getElementById('broadcastTime').textContent = 
-                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const broadcastTimeElem = document.getElementById('broadcastTime');
+            if (broadcastTimeElem) {
+                broadcastTimeElem.textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
         }
     }, 1000);
 }
@@ -155,8 +160,8 @@ async function stopBroadcast() {
 }
 
 async function updateTrackInfo() {
-    const artist = document.getElementById('trackArtistInput').value.trim();
-    const track = document.getElementById('trackNameInput').value.trim();
+    const artist = document.getElementById('trackArtistInput')?.value.trim() || '';
+    const track = document.getElementById('trackNameInput')?.value.trim() || '';
 
     if (!artist && !track) {
         showToast('Заполните хотя бы одно поле', 'error');
@@ -172,8 +177,8 @@ async function updateTrackInfo() {
         
         if (response.ok) {
             showToast('Информация о треке обновлена', 'success');
-            document.getElementById('trackArtistInput').value = '';
-            document.getElementById('trackNameInput').value = '';
+            if (document.getElementById('trackArtistInput')) document.getElementById('trackArtistInput').value = '';
+            if (document.getElementById('trackNameInput')) document.getElementById('trackNameInput').value = '';
             await loadBroadcastInfo();
         } else {
             showToast('Ошибка обновления трека', 'error');
@@ -181,6 +186,81 @@ async function updateTrackInfo() {
     } catch (error) {
         showToast('Ошибка соединения с сервером', 'error');
     }
+}
+
+function uploadAudio() {
+    console.log('uploadAudio function called');
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.mp3,.wav,.ogg';
+    fileInput.style.position = 'absolute';
+    fileInput.style.top = '-100px';
+    fileInput.style.left = '-100px';
+    fileInput.style.opacity = '0';
+    
+    fileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+            document.body.removeChild(fileInput);
+            return;
+        }
+        
+        console.log('Selected file:', file.name, 'size:', file.size, 'type:', file.type);
+
+        if (file.size > 50 * 1024 * 1024) {
+            showToast('Файл превышает 50 МБ', 'error');
+            document.body.removeChild(fileInput);
+            return;
+        }
+
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!['mp3', 'wav', 'ogg'].includes(fileExtension)) {
+            showToast('Неподдерживаемый формат. Используйте MP3, WAV или OGG', 'error');
+            document.body.removeChild(fileInput);
+            return;
+        }
+
+        let trackName = file.name.replace(/\.[^/.]+$/, "");
+        const customName = prompt('Введите название трека:', trackName);
+        if (customName !== null && customName.trim() !== '') {
+            trackName = customName.trim();
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('trackName', trackName);
+        
+        showToast('Загрузка файла...', 'info');
+        
+        try {
+            const response = await fetch('/api/broadcaster/upload-audio', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            console.log('Upload response:', result);
+            
+            if (response.ok) {
+                showToast(result.message || 'Трек успешно загружен!', 'success');
+
+                setTimeout(() => {
+                    loadBroadcastInfo();
+                }, 500);
+            } else {
+                showToast(result.message || 'Ошибка при загрузке файла', 'error');
+            }
+        } catch (error) {
+            console.error('Error uploading audio:', error);
+            showToast('Ошибка соединения с сервером', 'error');
+        }
+
+        document.body.removeChild(fileInput);
+    };
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
 }
 
 async function loadMessages() {
@@ -202,13 +282,16 @@ async function loadMessages() {
         }
     } catch (error) {
         console.error('Error loading messages:', error);
-        document.getElementById('messagesContainer').innerHTML = 
-            '<div class="empty-state">Ошибка загрузки сообщений</div>';
+        const container = document.getElementById('messagesContainer');
+        if (container) {
+            container.innerHTML = '<div class="empty-state">Ошибка загрузки сообщений</div>';
+        }
     }
 }
 
 function renderMessages(messages) {
     const container = document.getElementById('messagesContainer');
+    if (!container) return;
     
     if (!messages || messages.length === 0) {
         container.innerHTML = '<div class="empty-state">📭 Нет сообщений</div>';
@@ -294,19 +377,29 @@ async function markAsRead(messageId) {
 
 function openReplyModal(messageId, userName, messageContent, sentAt) {
     currentReplyMessageId = messageId;
-    document.getElementById('replySenderName').textContent = userName;
-    document.getElementById('replySenderDate').textContent = formatDateTime(sentAt);
-    document.getElementById('replyMessageText').textContent = messageContent;
-    document.getElementById('replyTextArea').value = '';
-    document.getElementById('replyError').textContent = '';
-    document.getElementById('replyModal').classList.add('active');
+    const senderNameElem = document.getElementById('replySenderName');
+    const senderDateElem = document.getElementById('replySenderDate');
+    const messageTextElem = document.getElementById('replyMessageText');
+    const replyTextArea = document.getElementById('replyTextArea');
+    const replyError = document.getElementById('replyError');
+    
+    if (senderNameElem) senderNameElem.textContent = userName;
+    if (senderDateElem) senderDateElem.textContent = formatDateTime(sentAt);
+    if (messageTextElem) messageTextElem.textContent = messageContent;
+    if (replyTextArea) replyTextArea.value = '';
+    if (replyError) replyError.textContent = '';
+    
+    const modal = document.getElementById('replyModal');
+    if (modal) modal.classList.add('active');
 }
 
 async function sendReply() {
-    const replyText = document.getElementById('replyTextArea').value.trim();
+    const replyTextArea = document.getElementById('replyTextArea');
+    const replyText = replyTextArea ? replyTextArea.value.trim() : '';
     
     if (!replyText) {
-        document.getElementById('replyError').textContent = 'Введите текст ответа';
+        const replyError = document.getElementById('replyError');
+        if (replyError) replyError.textContent = 'Введите текст ответа';
         return;
     }
     
@@ -342,43 +435,20 @@ function filterMessages(filter, button) {
     document.querySelectorAll('.filter-chip').forEach(btn => {
         btn.classList.remove('active');
     });
-    button.classList.add('active');
+    if (button) button.classList.add('active');
     
     loadMessages();
 }
 
 function closeReplyModal() {
-    document.getElementById('replyModal').classList.remove('active');
+    const modal = document.getElementById('replyModal');
+    if (modal) modal.classList.remove('active');
     currentReplyMessageId = null;
 }
 
-function uploadAudio() {
-    document.getElementById('uploadModal').classList.add('active');
-    
-    const fileInput = document.getElementById('audioFileInput');
-    fileInput.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        if (file.size > 50 * 1024 * 1024) {
-            showToast('Файл превышает 50 МБ', 'error');
-            return;
-        }
-        
-        const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg'];
-        if (!allowedTypes.includes(file.type)) {
-            showToast('Неподдерживаемый формат. Используйте MP3, WAV или OGG', 'error');
-            return;
-        }
-        
-        // Здесь будет логика загрузки файла на сервер
-        showToast('Функция загрузки будет доступна в следующей версии', 'warning');
-        closeUploadModal();
-    };
-}
-
 function closeUploadModal() {
-    document.getElementById('uploadModal').classList.remove('active');
+    const modal = document.getElementById('uploadModal');
+    if (modal) modal.classList.remove('active');
 }
 
 function showToast(message, type) {
@@ -406,7 +476,6 @@ function logout() {
     window.location.href = '/login';
 }
 
-// Закрытие модальных окон по клику вне
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {

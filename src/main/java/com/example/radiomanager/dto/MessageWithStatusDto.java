@@ -1,4 +1,3 @@
-// src/main/java/com/example/radiomanager/dto/MessageWithStatusDto.java
 package com.example.radiomanager.dto;
 
 import lombok.AllArgsConstructor;
