@@ -1,4 +1,3 @@
-// src/main/java/com/example/radiomanager/controller/UserController.java
 package com.example.radiomanager.controller;
 
 import com.example.radiomanager.dto.UserResponseDto;
@@ -26,7 +25,7 @@ public class UserController {
                 user.getId(),
                 user.getLogin(),
                 user.getFullName(),
-                user.getRole()
+                user.getRoles()
         ));
     }
 }

@@ -1,11 +1,10 @@
-// public/js/player.js
 let currentUser = null;
 let audioContext = null;
 let gainNode = null;
 let isPlaying = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // Проверяем авторизацию
+
     const userJson = localStorage.getItem("currentUser");
     if (!userJson) {
         window.location.href = "/login";
@@ -14,13 +13,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     currentUser = JSON.parse(userJson);
 
-    // Загружаем навигацию
     await loadNavigation();
 
-    // Инициализируем плеер
     initPlayer();
 
-    // Инициализируем форму обратной связи
     initFeedbackForm();
 });
 
@@ -28,38 +24,33 @@ async function loadNavigation() {
     const navLinks = document.getElementById("navLinks");
     const userInfo = document.getElementById("userInfo");
 
-    // Определяем доступные модули на основе роли
     const modules = [];
 
-    // Главная страница (Плеер) доступна всем
     modules.push({
         name: "Плеер",
-        icon: "🎵",
+        icon: "",
         path: "/player",
         active: true
     });
 
-    // Раздел ведущего (для ролей Ведущий и Администратор)
-    if (currentUser.role === "ADMIN" || currentUser.role === "BROADCASTER") {
+    if (currentUser.roles && (currentUser.roles.includes("ADMIN") || currentUser.roles.includes("BROADCASTER"))) {
         modules.push({
             name: "Раздел ведущего",
-            icon: "🎙️",
+            icon: "",
             path: "/broadcaster",
             active: false
         });
     }
 
-    // Администрирование (только для Администратор)
-    if (currentUser.role === "ADMIN") {
+    if (currentUser.roles && currentUser.roles.includes("ADMIN")) {
         modules.push({
             name: "Администрирование",
-            icon: "⚙️",
+            icon: "",
             path: "/admin",
             active: false
         });
     }
 
-    // Строим навигацию
     navLinks.innerHTML = modules.map(module => `
         <a href="${module.path}" class="nav-item ${module.active ? 'active' : ''}">
             <span>${module.icon}</span>
@@ -67,9 +58,8 @@ async function loadNavigation() {
         </a>
     `).join('');
 
-    // Информация о пользователе
     userInfo.innerHTML = `
-        <span class="user-name">${currentUser.fullName}</span>
+        <span class="user-name">${escapeHtml(currentUser.fullName)}</span>
         <button class="logout-btn" onclick="logout()">Выйти</button>
     `;
 }
@@ -80,18 +70,15 @@ function initPlayer() {
     const volumeSlider = document.getElementById("volumeSlider");
     const volumeValue = document.getElementById("volumeValue");
 
-    // Инициализация Web Audio API для управления громкостью
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     gainNode = audioContext.createGain();
     const source = audioContext.createMediaElementSource(audio);
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
-    // Устанавливаем начальную громкость
     gainNode.gain.value = parseFloat(volumeSlider.value);
     volumeValue.textContent = `${Math.round(gainNode.gain.value * 100)}%`;
 
-    // Обработчик кнопки воспроизведения/паузы
     playPauseBtn.addEventListener("click", () => {
         if (isPlaying) {
             audio.pause();
@@ -114,16 +101,13 @@ function initPlayer() {
         }
     });
 
-    // Обработчик изменения громкости
     volumeSlider.addEventListener("input", (e) => {
         const value = parseFloat(e.target.value);
         gainNode.gain.value = value;
         volumeValue.textContent = `${Math.round(value * 100)}%`;
     });
 
-    // Обработчик окончания трека (для петли)
     audio.addEventListener("ended", () => {
-        // Для демонстрации просто останавливаем, в реальном приложении можно перезапускать
         isPlaying = false;
         playPauseBtn.innerHTML = `
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -175,6 +159,13 @@ function initFeedbackForm() {
             showToast("Ошибка соединения с сервером", "error");
         }
     });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function showToast(message, type) {

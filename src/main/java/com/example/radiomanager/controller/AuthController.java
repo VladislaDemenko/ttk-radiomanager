@@ -48,11 +48,12 @@ public class AuthController {
 
         try {
             User user = userService.authenticate(loginRequest.getLogin(), loginRequest.getPassword());
+
             UserResponseDto response = new UserResponseDto(
                     user.getId(),
                     user.getLogin(),
                     user.getFullName(),
-                    user.getRole()
+                    user.getRoles()
             );
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {

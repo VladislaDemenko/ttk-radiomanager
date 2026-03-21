@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Администрирование | Система управления потоковым вещанием</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/player.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<nav class="navbar" id="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <span class="logo-dot"></span>
+            <span>ТТК - Вещание</span>
+        </div>
+        <div class="nav-links" id="navLinks"></div>
+        <div class="user-info" id="userInfo"></div>
+    </div>
+</nav>
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Администрирование</h1>
+        <p>Управление пользователями системы</p>
+    </div>
+
+    <div class="filter-panel">
+        <div class="filter-title">
+            <span>Фильтры</span>
+        </div>
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label>Логин</label>
+                <input type="text" id="filterLogin" placeholder="Поиск по логину...">
+            </div>
+            <div class="filter-group">
+                <label>ФИО</label>
+                <input type="text" id="filterFullName" placeholder="Поиск по ФИО...">
+            </div>
+            <div class="filter-group">
+                <label>Роль</label>
+                <select id="filterRole">
+                    <option value="">Все роли</option>
+                    <option value="USER">Пользователь</option>
+                    <option value="BROADCASTER">Ведущий</option>
+                    <option value="ADMIN">Администратор</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Дата регистрации от</label>
+                <input type="date" id="filterDateFrom">
+            </div>
+            <div class="filter-group">
+                <label>Дата регистрации до</label>
+                <input type="date" id="filterDateTo">
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button class="filter-btn primary" onclick="applyFilters()">Применить</button>
+            <button class="filter-btn secondary" onclick="resetFilters()">Сбросить</button>
+        </div>
+    </div>
+
+    <div class="users-table-container">
+        <table class="users-table">
+            <thead>
+            <tr>
+                <th>Логин</th>
+                <th>ФИО</th>
+                <th>Роль</th>
+                <th>Дата регистрации</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody id="usersTableBody">
+            <tr>
+                <td colspan="5" class="loading">Загрузка пользователей...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Редактировать пользователя</h2>
+            <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="input-box">
+                <label>Логин</label>
+                <input type="text" id="editLogin" placeholder="Только латинские буквы">
+            </div>
+            <div class="input-box">
+                <label>ФИО</label>
+                <input type="text" id="editFullName" placeholder="Только русские буквы">
+            </div>
+            <p id="editMessage" class="message"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn cancel" onclick="closeModal('editModal')">Отмена</button>
+            <button class="modal-btn save" onclick="saveUserEdit()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Сменить пароль</h2>
+            <button class="modal-close" onclick="closeModal('passwordModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="input-box">
+                <label>Новый пароль</label>
+                <input type="password" id="newPassword" placeholder="Латиница, цифры, символы">
+            </div>
+            <div class="input-box">
+                <label>Подтверждение пароля</label>
+                <input type="password" id="confirmPassword" placeholder="Повторите пароль">
+            </div>
+            <p id="passwordMessage" class="message"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn cancel" onclick="closeModal('passwordModal')">Отмена</button>
+            <button class="modal-btn save" onclick="savePassword()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<div id="rolesModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Назначить роли</h2>
+            <button class="modal-close" onclick="closeModal('rolesModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="roles-checkbox-group">
+                <div class="role-checkbox">
+                    <input type="checkbox" id="roleUser" value="USER">
+                    <label for="roleUser">
+                        <strong>Пользователь</strong>
+                        <div class="role-desc">Базовый доступ к плееру</div>
+                    </label>
+                </div>
+                <div class="role-checkbox">
+                    <input type="checkbox" id="roleBroadcaster" value="BROADCASTER">
+                    <label for="roleBroadcaster">
+                        <strong>Ведущий</strong>
+                        <div class="role-desc">Доступ к управлению эфиром</div>
+                    </label>
+                </div>
+                <div class="role-checkbox">
+                    <input type="checkbox" id="roleAdmin" value="ADMIN">
+                    <label for="roleAdmin">
+                        <strong>Администратор</strong>
+                        <div class="role-desc">Полный доступ к системе</div>
+                    </label>
+                </div>
+            </div>
+            <p id="rolesMessage" class="message"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn cancel" onclick="closeModal('rolesModal')">Отмена</button>
+            <button class="modal-btn save" onclick="saveRoles()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

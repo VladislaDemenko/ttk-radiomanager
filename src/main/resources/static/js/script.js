@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return /^[A-Za-z0-9!@#$%^&*()_\-+=\[\]{};:'",.<>/?\\|`~]+$/.test(password);
   }
 
-  // Регистрация
   if (registerForm) {
     registerForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -96,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Вход в систему
   if (loginForm) {
     loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
