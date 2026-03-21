@@ -31,6 +31,16 @@ public class Message {
     @Column(name = "is_read")
     private boolean isRead = false;
 
+    @Column(name = "reply", columnDefinition = "TEXT")
+    private String reply;
+
+    @Column(name = "replied_at")
+    private LocalDateTime repliedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "replied_by")
+    private User repliedBy;
+
     public Message(User user, String content, LocalDateTime sentAt) {
         this.user = user;
         this.content = content;
@@ -38,3 +48,4 @@ public class Message {
         this.isRead = false;
     }
 }
+

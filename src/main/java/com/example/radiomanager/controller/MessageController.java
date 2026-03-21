@@ -41,4 +41,6 @@ public class MessageController {
         response.put("message", "Сообщение отправлено");
         return ResponseEntity.ok(response);
     }
+
+
 }

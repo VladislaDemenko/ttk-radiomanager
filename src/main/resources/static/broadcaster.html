@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Раздел ведущего | Система управления потоковым вещанием</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/broadcaster.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <span class="logo-dot"></span>
+            <span>ТТК - Вещание</span>
+        </div>
+        <div class="nav-links" id="navLinks"></div>
+        <div class="user-info" id="userInfo"></div>
+    </div>
+</nav>
+
+<div class="broadcaster-container">
+    <!-- Левая колонка - Управление эфиром -->
+    <div class="broadcaster-left">
+        <div class="card">
+            <div class="card-header">
+                <h2>🎙️ Управление эфиром</h2>
+                <div class="broadcast-status-badge" id="broadcastStatusBadge">
+                    <span class="status-indicator offline"></span>
+                    <span>Эфир остановлен</span>
+                </div>
+            </div>
+
+            <div class="current-track-card">
+                <div class="track-label">Сейчас в эфире</div>
+                <div class="track-title" id="currentTrackTitle">—</div>
+                <div class="track-artist" id="currentTrackArtist">—</div>
+            </div>
+
+            <div class="broadcast-actions">
+                <button class="btn btn-success" id="startBtn" onclick="startBroadcast()">
+                    <span>▶</span> Начать эфир
+                </button>
+                <button class="btn btn-danger" id="stopBtn" onclick="stopBroadcast()" disabled>
+                    <span>■</span> Остановить эфир
+                </button>
+            </div>
+
+            <div class="track-update">
+                <h3>📝 Обновить информацию о треке</h3>
+                <div class="track-form">
+                    <input type="text" id="trackArtistInput" placeholder="Исполнитель" class="form-input">
+                    <input type="text" id="trackNameInput" placeholder="Название трека" class="form-input">
+                    <button class="btn btn-primary" onclick="updateTrackInfo()">Обновить</button>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stat-item">
+                    <span class="stat-icon"></span>
+                    <div>
+                        <div class="stat-label">Слушателей онлайн</div>
+                        <div class="stat-value" id="listenerCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon"></span>
+                    <div>
+                        <div class="stat-label">Время эфира</div>
+                        <div class="stat-value" id="broadcastTime">00:00:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Медиатека и плейлист (для расширенного функционала) -->
+        <div class="card">
+            <div class="card-header">
+                <h2> Медиатека</h2>
+                <button class="btn-icon" onclick="uploadAudio()" title="Загрузить аудио">➕</button>
+            </div>
+            <div class="media-library" id="mediaLibrary">
+                <div class="empty-state">
+                    <p>Загрузите аудиофайлы (MP3, WAV, OGG)</p>
+                    <button class="btn btn-secondary" onclick="uploadAudio()">Загрузить файл</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Правая колонка - Сообщения -->
+    <div class="broadcaster-right">
+        <div class="card">
+            <div class="card-header">
+                <h2> Сообщения слушателей</h2>
+                <div class="message-filters">
+                    <button class="filter-chip active" data-filter="unreplied" onclick="filterMessages('unreplied', this)"> Новые</button>
+                    <button class="filter-chip" data-filter="all" onclick="filterMessages('all', this)"> Все</button>
+                    <button class="filter-chip" data-filter="replied" onclick="filterMessages('replied', this)"> Завершённые</button>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <div class="loading-spinner">Загрузка сообщений...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно ответа на сообщение -->
+<div id="replyModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ответить на сообщение</h3>
+                <button class="modal-close" onclick="closeReplyModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="original-message-box">
+                    <div class="message-sender">
+                        <strong id="replySenderName"></strong>
+                        <span class="message-date" id="replySenderDate"></span>
+                    </div>
+                    <div class="message-text" id="replyMessageText"></div>
+                </div>
+                <div class="reply-input-box">
+                    <label>Ваш ответ:</label>
+                    <textarea id="replyTextArea" rows="4" placeholder="Введите ответ на сообщение..."></textarea>
+                </div>
+                <div id="replyError" class="error-message"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeReplyModal()">Отмена</button>
+                <button class="btn btn-primary" onclick="sendReply()">Отправить ответ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно загрузки аудио -->
+<div id="uploadModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Загрузить аудиофайл</h3>
+                <button class="modal-close" onclick="closeUploadModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="audioFileInput" accept=".mp3,.wav,.ogg" style="display: none;">
+                    <div class="upload-placeholder" onclick="document.getElementById('audioFileInput').click()">
+                        <span class="upload-icon">📁</span>
+                        <p>Нажмите для выбора файла</p>
+                        <small>Поддерживаемые форматы: MP3, WAV, OGG (макс. 50 МБ)</small>
+                    </div>
+                </div>
+                <div id="uploadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="uploadProgressFill"></div>
+                    </div>
+                    <p id="uploadStatus">Загрузка...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/broadcaster.js"></script>
+</body>
+</html>

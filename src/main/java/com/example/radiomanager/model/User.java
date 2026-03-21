@@ -1,4 +1,3 @@
-// src/main/java/com/example/radiomanager/model/User.java
 package com.example.radiomanager.model;
 
 import jakarta.persistence.*;

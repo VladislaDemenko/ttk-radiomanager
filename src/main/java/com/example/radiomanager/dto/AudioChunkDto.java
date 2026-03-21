@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangePasswordDto {
-    private String newPassword;
-    private String confirmPassword;
+public class AudioChunkDto {
+    private int chunkNumber;
+    private String data;
+    private boolean isLast;
+    private String trackName;
 }
